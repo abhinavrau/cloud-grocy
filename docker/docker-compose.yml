@@ -1,0 +1,39 @@
+# Usage:
+# docker-compose up
+version: "3"
+
+services:
+  grocy-nginx:
+    image: "grocy/nginx:v2.6.2-3"
+    restart: unless-stopped
+    depends_on:
+      - grocy
+    ports:
+      - '80:80'
+      - '443:443'
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+     - /var/log/nginx
+     - www-static:/var/www/public:ro
+    container_name: nginx
+
+  grocy:
+    image: "grocy/grocy:v2.6.2-3"
+    expose:
+      - 9000
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - /var/log/php7
+      - app-db:/var/www/data
+      - www-static:/var/www/public:ro
+    env_file:
+      - grocy.env
+    container_name: grocy
+
+volumes:
+  app-db:
+  www-static:

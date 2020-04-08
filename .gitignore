@@ -1,0 +1,5 @@
+/.idea/
+**/.terraform/
+**/ssh_key.pem
+**/*.tfstate
+**/*.tfstate.*

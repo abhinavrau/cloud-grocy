@@ -1,28 +1,48 @@
 # Usage:
 # docker-compose up
-version: "3"
+version: '2.4'
 
 services:
-  grocy-nginx:
+
+  nginx:
     image: "grocy/nginx:v2.6.2-3"
-    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile-grocy-nginx
     depends_on:
       - grocy
     ports:
-      - '80:80'
-      - '443:443'
+      - '80:8080'
+      - '443:8443'
     read_only: true
     tmpfs:
       - /tmp
     volumes:
-     - /var/log/nginx
-     - www-static:/var/www/public:ro
+      - /var/log/nginx
+      - www-static:/var/www/public:ro
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
     container_name: nginx
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    container_name: certbot
 
   grocy:
     image: "grocy/grocy:v2.6.2-3"
+    build:
+      args:
+        GROCY_VERSION: v2.6.2
+      context: .
+      dockerfile: Dockerfile-grocy
     expose:
-      - 9000
+      - '9000'
     read_only: true
     tmpfs:
       - /tmp

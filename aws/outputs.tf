@@ -3,5 +3,9 @@ output "host_ssh_key" {
 }
 
 output "grocy_host" {
-  value =aws_eip.ip-grocy.public_ip
+  value = aws_eip.ip-grocy.public_ip
+}
+
+output "grocy_url" {
+  value = "${var.project_name}.${var.toplevel_domain}"
 }

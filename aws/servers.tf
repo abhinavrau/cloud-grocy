@@ -29,6 +29,8 @@ data "aws_ami" "ami" {
   }
 }
 
+
+
 resource "aws_instance" "grocy-ec2-instance" {
   ami = data.aws_ami.ami.image_id
   instance_type = "t2.micro"
@@ -43,19 +45,44 @@ resource "aws_instance" "grocy-ec2-instance" {
     Name = var.project_name
   }
 
+  provisioner "remote-exec" {
+    inline = [ "mkdir -p data/nginx/conf.d",
+    ]
+  }
 
+  // put in the correct domain name in nginx ssl config
+  provisioner "file" {
+    destination = "~/data/nginx/conf.d/ssl.conf"
+    content = templatefile("${path.cwd}/../nginx/conf.d/ssl.conf.tpl", {
+      domain_name =  "${var.project_name}.${var.toplevel_domain}"
+    })
+  }
+
+  // Copy over nginx configs
+  provisioner "file" {
+    source = "${path.cwd}/../nginx/"
+    destination = "~/data/nginx"
+  }
+
+  // Copy over Lestencrypt scripts
   provisioner "file" {
     source = "${path.cwd}/../letsencrypt/"
     destination = "~/"
   }
 
+  // Copy over docker scripts
   provisioner "file" {
     source = "${path.cwd}/../docker/"
     destination = "~/"
   }
 
-  // Backup
+  // Copy over backup scripts
+  provisioner "file" {
+    source = "${path.cwd}/../backup/"
+    destination = "~/"
+  }
 
+  // Copy over Dropbox configs
   provisioner "remote-exec" {
     inline = [ "mkdir -p .config",
     ]
@@ -64,11 +91,6 @@ resource "aws_instance" "grocy-ec2-instance" {
   provisioner "file" {
     source = "~/.config/dbxcli"
     destination = "~/.config"
-  }
-
-  provisioner "file" {
-    source = "${path.cwd}/../backup/"
-    destination = "~/"
   }
 
 
@@ -84,8 +106,9 @@ resource "aws_instance" "grocy-ec2-instance" {
       "sudo chmod a+x ./*.sh",
       "sudo ./install-docker.sh",
       "sudo ./install-docker-compose.sh",
-      "sudo ./install-docker-grocy.sh",
-      "sudo ./schedule-backup.sh"
+      "sudo ./register-duckdns.sh",
+      "sudo ./init-letsencrypt.sh -d ${var.project_name}.${var.toplevel_domain}",
+      //"sudo ./schedule-backup.sh",
     ]
   }
 

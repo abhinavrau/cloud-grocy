@@ -6,7 +6,7 @@ if dbxcli account; then
   mkdir -p restore
   # get the backup contents
   dbxcli get grocy_backup/grocy.db restore/grocy.db
-  sudo docker cp restore/grocy.db grocy_1:/www/data/grocy.db
+  sudo docker cp restore/grocy.db grocy:/www/data/grocy.db
 else
   echo "Error: dbxcli not configured for restorting. Database not restored." 1>&2
   exit 1

@@ -6,10 +6,8 @@
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -d domainName -e email -s stagingFlag"
-   echo -e "\t-d registered domain name to use for letsencrypt certificate"
-   echo -e "\t-e Email address to use to register with letsencrypt"
-   echo -e "\t-s 1 to use letsencrypt staging env (used for testing) OR 0 for Production (has request limits) "
+   echo "Usage: $0 -d domainName [-e email] [-s stagingFlag]"
+   echo -e "\t-d registered domain name to use for letsencrypt certificate."
    exit 1 # Exit script after printing help
 }
 
@@ -17,14 +15,13 @@ while getopts "d:e:s:" opt
 do
    case "$opt" in
       d ) domainName="$OPTARG" ;;
-      e ) email="$OPTARG" ;;
-      s ) stagingFlag="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
 
 # Print helpFunction in case parameters are empty
-if [ -z "$domainName" ] || [ -z "$email" ] || [ -z "$stagingFlag" ]
+if [ -z "$domainName" ]
+ #|| [ -z "$emailAddress" ] || [ -z "$stagingFlag" ]
 then
    echo "Some or all of the parameters are empty";
    helpFunction
@@ -38,15 +35,15 @@ fi
 domains=$domainName
 rsa_key_size=4096
 data_path="./data/certbot"
-email="$email" # Adding a valid address is strongly recommended
-staging=$stagingFlag # Set to 1 if you're testing your setup to avoid hitting request limits
+email="" # Adding a valid address is strongly recommended
+staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
-if [ -d "$data_path" ]; then
-  read -p "Existing data found for $domains. Continue and replace existing certificate? (y/N) " decision
-  if [ "$decision" != "Y" ] && [ "$decision" != "y" ]; then
-    exit
-  fi
-fi
+#if [ -d "$data_path" ]; then
+#  read -p "Existing data found for $domains. Continue and replace existing certificate? (y/N) " decision
+#  if [ "$decision" != "Y" ] && [ "$decision" != "y" ]; then
+#    exit
+#  fi
+#fi
 
 
 if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
@@ -66,11 +63,14 @@ docker-compose run --rm --entrypoint "\
     -keyout '$path/privkey.pem' \
     -out '$path/fullchain.pem' \
     -subj '/CN=localhost'" certbot
+
+docker-compose run --rm --entrypoint "\
+  chmod a+r '$path/privkey.pem'" certbot
 echo
 
 
 echo "### Starting nginx ..."
-docker-compose up --force-recreate -d nginx_1
+docker-compose up --force-recreate -d nginx
 echo
 
 echo "### Deleting dummy certificate for $domains ..."
@@ -95,7 +95,7 @@ case "$email" in
 esac
 
 # Enable staging mode if needed
-if [ $staging != "0" ]; then staging_arg="--staging"; fi
+if [ "$staging" != "0" ]; then staging_arg="--staging"; fi
 
 docker-compose run --rm --entrypoint "\
   certbot certonly --webroot -w /var/www/certbot \
@@ -105,7 +105,8 @@ docker-compose run --rm --entrypoint "\
     --rsa-key-size $rsa_key_size \
     --agree-tos \
     --force-renewal" certbot
-echo
+
+sudo chmod -R 755 $data_path
 
 echo "### Reloading nginx ..."
-docker-compose exec nginx_1 nginx -s reload
+docker-compose exec nginx nginx -s reload

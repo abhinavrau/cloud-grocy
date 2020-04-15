@@ -3,13 +3,13 @@
 # cloud-grocy
 > Get your [grocy](https://grocy.info) server running securely in the cloud for free!
 
-Opinionated script to deploy and run [grocy](https://grocy.info) (ERP beyond your fridge) on AWS, [DuckDNS](htts://duckdns.org) (free DNS provider) and [LetsEncrypt](https://letsencrypt.org/)
+Opinionated script to deploy and run [grocy](https://grocy.info) (ERP beyond your fridge) on AWS, [DuckDNS](https://duckdns.org) (free DNS provider) and [LetsEncrypt](https://letsencrypt.org/)
 
 ## Features
 
-* Deploys to AWS EC2 t2.micro instance (free tier).
+* Deploys to AWS EC2 t2.micro instance (free tier i.e. free for one year with a new AWS account).
 * Enable HTTPS only access with [LetsEncrypt](https://letsencrypt.org/) Certificates with auto renewal.
-* Register host with [DuckDNS](htts://duckdns.org)
+* Register host with [DuckDNS](https://duckdns.org)
 * Backup grocy database to DropBox daily (because sh*t happens). Dropbox account required to enable backups. It is recommended to not use a seperate (not personal) dropbox account to store the backup, since dropbox credentials are copied to AWS. 
 
 ## Installing / Getting started
@@ -17,7 +17,7 @@ Opinionated script to deploy and run [grocy](https://grocy.info) (ERP beyond you
 Prerequisites:
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed and authenticated to an AWS account with the right permissions to create EC2 instances. [Video Tutorial](https://www.youtube.com/watch?v=FOK5BPy30HQ)
 * [Terraform CLI](https://learn.hashicorp.com/terraform/getting-started/install.html) installed
-* Registered [DuckDNS](htts://duckdns.org) domain name. [DuckDNS](htts://duckdns.org) is a free service that allows create a domain for your grocy server. It will generate a token which you will need for installation.
+* Registered [DuckDNS](htts://duckdns.org) domain name. [DuckDNS](https://duckdns.org) is a free service that allows create a domain for your grocy server. It will generate a token which you will need for installation.
 
 ```shell
 git clone https://github.com/abhinavrau/cloud-grocy/

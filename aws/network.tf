@@ -7,8 +7,8 @@ resource "aws_vpc" "grocy_vpc" {
     name = "grocy_vpc"
   }
 }
-
-resource "aws_eip" "ip-grocy" {
-  instance = aws_instance.grocy-ec2-instance.id
-  vpc = true
-}
+//
+//resource "aws_eip" "ip-grocy" {
+//  instance = aws_instance.grocy-ec2-instance.id
+//  vpc = true
+//}

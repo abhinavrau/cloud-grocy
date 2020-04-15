@@ -42,11 +42,12 @@ resource "aws_instance" "grocy-ec2-instance" {
   associate_public_ip_address = true
 
   tags = {
-    Name = var.project_name
+    Name = "grocy server"
   }
 
   provisioner "remote-exec" {
     inline = [ "mkdir -p data/nginx/conf.d",
+      "mkdir -p dns",
     ]
   }
 
@@ -54,7 +55,7 @@ resource "aws_instance" "grocy-ec2-instance" {
   provisioner "file" {
     destination = "~/data/nginx/conf.d/ssl.conf"
     content = templatefile("${path.cwd}/../nginx/conf.d/ssl.conf.tpl", {
-      domain_name =  "${var.project_name}.${var.toplevel_domain}"
+      domain_name =  "${var.duckdns_domain}.duckdns.org"
     })
   }
 
@@ -62,6 +63,30 @@ resource "aws_instance" "grocy-ec2-instance" {
   provisioner "file" {
     source = "${path.cwd}/../nginx/"
     destination = "~/data/nginx"
+  }
+
+  // put in the correct domain name in dns script
+  provisioner "file" {
+    destination = "~/dns/register-duckdns.sh"
+    content = templatefile("${path.cwd}/../dns/register-duckdns.sh.tpl", {
+      duckdns_domain =  var.duckdns_domain
+      duckdns_token = var.duckdns_token
+    })
+  }
+
+  // put in the correct domain name in dns script
+  provisioner "file" {
+    destination = "~/dns/wait-for-dns.sh"
+    content = templatefile("${path.cwd}/../dns/wait-for-dns.sh.tpl", {
+      duckdns_domain =  var.duckdns_domain
+      duckdns_token = var.duckdns_token
+    })
+  }
+
+  // Copy over dns scripts
+  provisioner "file" {
+    source = "${path.cwd}/../dns/"
+    destination = "~/dns"
   }
 
   // Copy over Lestencrypt scripts
@@ -103,11 +128,11 @@ resource "aws_instance" "grocy-ec2-instance" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo chmod a+x ./*.sh",
+      "sudo chmod a+x -R ./*.sh",
       "sudo ./install-docker.sh",
       "sudo ./install-docker-compose.sh",
-      "sudo ./register-duckdns.sh",
-      "sudo ./init-letsencrypt.sh -d ${var.project_name}.${var.toplevel_domain}",
+      "cd dns && sudo chmod a+x -R ./*.sh && sudo ./schedule-duckdns.sh",
+      "cd .. && sudo ./init-letsencrypt.sh -d ${var.duckdns_domain}.duckdns.org",
       //"sudo ./schedule-backup.sh",
     ]
   }

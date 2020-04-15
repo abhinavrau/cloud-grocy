@@ -10,5 +10,5 @@ server {
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-    include /etc/nginx/conf.d/common.conf;
+    include /etc/nginx/conf.d/common.conf2;
 }

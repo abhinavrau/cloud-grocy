@@ -7,3 +7,5 @@ sudo curl -L https://raw.githubusercontent.com/docker/compose/1.25.4/contrib/com
 -o /etc/bash_completion.d/docker-compose
 
 printf '\nDocker Compose installed successfully\n\n'
+
+sudo docker-compose pull

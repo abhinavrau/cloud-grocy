@@ -1,23 +1,23 @@
 ![Logo of the project](images/cloud-grocy-logo.png)
 
 # cloud-grocy
-> Get your [grocy](https://grocy.info) server running securely in the cloud!
+> Get your [grocy](https://grocy.info) server running securely in the cloud for free!
 
-Opinionated script to deploy and run [grocy](https://grocy.info) on AWS (using t2.micro on free tier) and DuckDNS (free DNS provider)
+Opinionated script to deploy and run [grocy](https://grocy.info) (ERP beyond your fridge) on AWS, [DuckDNS](htts://duckdns.org) (free DNS provider) and [LetsEncrypt](https://letsencrypt.org/)
 
 ## Features
 
 * Deploys to AWS EC2 t2.micro instance (free tier).
-* Enable HTTPS only access with LetsEncrypt Certificates with auto renewal.
-* Register host with with [DuckDNS](htts://duckdns.org) , a free DNS service.
-* Backup grocy database to DropBox daily (because sh*t happens). Dropbox account required to enable backups.
+* Enable HTTPS only access with [LetsEncrypt](https://letsencrypt.org/) Certificates with auto renewal.
+* Register host with [DuckDNS](htts://duckdns.org)
+* Backup grocy database to DropBox daily (because sh*t happens). Dropbox account required to enable backups. It is recommended to not use a seperate (not personal) dropbox account to store the backup, since dropbox credentials are copied to AWS. 
 
 ## Installing / Getting started
 
 Prerequisites:
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed and authenticated to an AWS account with the right permissions to create EC2 instances. [Video Tutorial](https://www.youtube.com/watch?v=FOK5BPy30HQ)
 * [Terraform CLI](https://learn.hashicorp.com/terraform/getting-started/install.html) installed
-* Registered [DuckDNS](htts://duckdns.org) domain name. [DuckDNS](htts://duckdns.org) is a free service that allows Create a domain for your grocy server. It will generate a token which you will need in for installation.
+* Registered [DuckDNS](htts://duckdns.org) domain name. [DuckDNS](htts://duckdns.org) is a free service that allows create a domain for your grocy server. It will generate a token which you will need for installation.
 
 ```shell
 git clone https://github.com/abhinavrau/cloud-grocy/
@@ -28,7 +28,7 @@ terraform plan -out=plan
 
 At this step, you will be prompted to enter:
 
-* Domain that you registered with [DuckDNS](htts://duckdns.org). 
+* Domain name that you registered with [DuckDNS](htts://duckdns.org). 
 * DuckDNS token for your domain created in the previous step.   
 
 ```shell 
@@ -42,6 +42,11 @@ This will do the following:
 1. Register the Public IP address of the EC2 instance with DuckDNS.
 1. Run nginx and grocy as docker containers provided by the [grocy-docker](https://github.com/grocy/grocy-docker) project
 1. Generate free SSL certificates using LetsEncrypt and install it. Also does auto renewal. 
+
+On completion, the script will output:
+* The URL of the grocy server
+* The public IP address of the EC2 t2.micro instance running grocy.
+* The SSH key for the EC2 t2.micro instance
 
 ## Backups
 
@@ -58,6 +63,16 @@ TODO
 ## Configuration
 
 To change the default behaviour, modify the variables.tf file.
+
+## SSH access
+
+In order to access the AWS instance:
+
+```shell 
+terraform output host_ssh_key > ssh_key.pem
+chmod 400 ssh_key.pem
+ssh -i ssh_key.pem ubuntu@(terrform output grocy_host)
+```
 
 ## Contributing
 

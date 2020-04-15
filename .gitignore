@@ -3,3 +3,4 @@
 **/ssh_key.pem
 **/*.tfstate
 **/*.tfstate.*
+**/.DS_Store/

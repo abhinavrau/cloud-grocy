@@ -45,6 +45,11 @@ resource "aws_instance" "grocy-ec2-instance" {
     Name = "grocy server"
   }
 
+  // Create the dbx dir if does not exist
+  provisioner "local-exec" {
+    command = "mkdir -p ~/.config/dbxcli"
+  }
+
   provisioner "remote-exec" {
     inline = [ "mkdir -p data/nginx/conf.d",
       "mkdir -p dns",

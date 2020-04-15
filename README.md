@@ -10,7 +10,7 @@ Opinionated script to deploy and run [grocy](https://grocy.info) (ERP beyond you
 * Deploys to AWS EC2 t2.micro instance (free tier i.e. free for one year with a new AWS account).
 * Enable HTTPS only access with [LetsEncrypt](https://letsencrypt.org/) Certificates with auto renewal.
 * Register host with [DuckDNS](https://duckdns.org)
-* Backup grocy database to DropBox daily (because sh*t happens). Dropbox account required to enable backups. It is recommended to not use a seperate (not personal) dropbox account to store the backup, since dropbox credentials are copied to AWS. 
+* Backup grocy database to DropBox daily (because sh*t happens). Dropbox account required to enable backups. It is recommended to use a seperate dropbox account (i.e. not your personal account) to store the backup, since dropbox credentials are copied to AWS. 
 
 ## Installing / Getting started
 

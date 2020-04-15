@@ -48,6 +48,8 @@ On completion, the script will output:
 * The public IP address of the EC2 t2.micro instance running grocy.
 * The SSH key for the EC2 t2.micro instance
 
+Remember to Login and change the admin password!
+
 ## Backups
 
 * In order to do scheduled backups to dropbox, you have to pre-configure the dropbox cli (dbxcli) prior to running the `terraform apply` command. And uncomment the `"sudo ./schedule-backup.sh"` line in the servers.tf file before running `terraform plan`.

@@ -52,7 +52,7 @@ Remember to Login and change the admin password!
 
 ## Backups
 
-* In order to do scheduled backups to dropbox, you have to pre-configure the [dropbox cli](https://github.com/dropbox/dbxcli) (dbxcli) prior to running the `terraform apply` command. And uncomment the `"sudo ./schedule-backup.sh"` line in the servers.tf file before running `terraform plan`.
+* In order to do scheduled backups to dropbox, you have to pre-configure the [dropbox cli](https://github.com/dropbox/dbxcli) (dbxcli) prior to running the `terraform apply` command. You also need to uncomment the `"sudo ./schedule-backup.sh"` line in the aws/servers.tf file before running `terraform plan`.
 * Backups will be taken once a day
 * Backups will be stored in directory called grocy_backup on Dropbox
 
@@ -69,6 +69,9 @@ terraform destroy
 ```
 This will destory all the resources created on AWS. Please remember to backup!
 
+## Testing
+
+I have personally tested this on my macOS. Testers on Windows and Linux needed!
 
 ## Developing
 

@@ -2,7 +2,7 @@
 set -e
 cd /home/ubuntu
 wget -O ./dbxcli https://github.com/dropbox/dbxcli/releases/download/v3.0.0/dbxcli-linux-amd64
-sudo chmod a+x dbxcli
+sudo chmod a+x ./dbxcli
 if ./dbxcli account; then
   mkdir -p backup
   sudo docker exec grocy apk add sqlite

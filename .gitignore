@@ -1,6 +1,6 @@
 /.idea/
+/.DS_Store/
 **/.terraform/
 **/ssh_key.pem
 **/*.tfstate
 **/*.tfstate.*
-**/.DS_Store/

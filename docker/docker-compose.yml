@@ -5,40 +5,30 @@ version: '2.4'
 services:
 
   nginx:
-    image: "grocy/nginx:v2.6.2-3"
+    image: "grocy/nginx:v2.7.1-2"
     build:
+      args:
+        GROCY_VERSION: v2.7.1
       context: .
       dockerfile: Dockerfile-grocy-nginx
     depends_on:
       - grocy
-    ports:
-      - '80:8080'
-      - '443:8443'
     read_only: true
     tmpfs:
       - /tmp
     volumes:
       - /var/log/nginx
-      - www-static:/var/www/public:ro
-      - ./data/nginx/conf.d:/etc/nginx/conf.d
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    container_name: nginx
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    container_name: certbot
-
+    container_name: nginx-grocy
+    environment:
+      VIRTUAL_HOST: ${DOMAINS}
+      LETSENCRYPT_HOST: ${DOMAINS}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      VIRTUAL_PORT: 8080
   grocy:
-    image: "grocy/grocy:v2.6.2-3"
+    image: "grocy/grocy:v2.7.1-2"
     build:
       args:
-        GROCY_VERSION: v2.6.2
+        GROCY_VERSION: v2.7.1
       context: .
       dockerfile: Dockerfile-grocy
     expose:
@@ -49,11 +39,14 @@ services:
     volumes:
       - /var/log/php7
       - app-db:/var/www/data
-      - www-static:/var/www/public:ro
     env_file:
       - grocy.env
     container_name: grocy
 
 volumes:
   app-db:
-  www-static:
+
+networks:
+  default:
+    external:
+      name: ${NETWORK}

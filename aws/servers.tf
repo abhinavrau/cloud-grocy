@@ -51,23 +51,18 @@ resource "aws_instance" "grocy-ec2-instance" {
   }
 
   provisioner "remote-exec" {
-    inline = [ "mkdir -p data/nginx/conf.d",
+    inline = [
       "mkdir -p dns",
+      "mkdir -p docker-compose-letsencrypt-nginx-proxy-companion",
     ]
   }
 
-  // put in the correct domain name in nginx ssl config
+  // put in the correct domain name in .env
   provisioner "file" {
-    destination = "~/data/nginx/conf.d/ssl.conf"
-    content = templatefile("${path.cwd}/../nginx/conf.d/ssl.conf.tpl", {
+    destination = "~/.env"
+    content = templatefile("${path.cwd}/../docker/.env.tpl", {
       domain_name =  "${var.duckdns_domain}.duckdns.org"
     })
-  }
-
-  // Copy over nginx configs
-  provisioner "file" {
-    source = "${path.cwd}/../nginx/"
-    destination = "~/data/nginx"
   }
 
   // put in the correct domain name in dns script
@@ -94,16 +89,16 @@ resource "aws_instance" "grocy-ec2-instance" {
     destination = "~/dns"
   }
 
-  // Copy over Lestencrypt scripts
-  provisioner "file" {
-    source = "${path.cwd}/../letsencrypt/"
-    destination = "~/"
-  }
-
   // Copy over docker scripts
   provisioner "file" {
     source = "${path.cwd}/../docker/"
     destination = "~/"
+  }
+
+  // Copy over letsencrypt-nginx-proxy-companion files
+  provisioner "file" {
+    source = "${path.cwd}/../docker-compose-letsencrypt-nginx-proxy-companion/"
+    destination = "~/docker-compose-letsencrypt-nginx-proxy-companion"
   }
 
   // Copy over backup scripts
@@ -137,7 +132,8 @@ resource "aws_instance" "grocy-ec2-instance" {
       "sudo ./install-docker.sh",
       "sudo ./install-docker-compose.sh",
       "cd dns && sudo chmod a+x -R ./*.sh && sudo ./schedule-duckdns.sh",
-      "cd .. && sudo ./init-letsencrypt.sh -d ${var.duckdns_domain}.duckdns.org",
+      "cd ../docker-compose-letsencrypt-nginx-proxy-companion && sudo chmod a+x -R ./*.sh && sudo ./start.sh",
+      "cd .. && sudo docker-compose up -d"
       //"sudo ./schedule-backup.sh",
     ]
   }

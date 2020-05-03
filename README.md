@@ -112,6 +112,7 @@ git pull
 ### Upgrade by running terraform
 
 ```shell 
+cd aws
 terraform plan -out=plan
 terraform apply "plan"
 ```

@@ -12,13 +12,13 @@ Opinionated script to deploy and run [grocy](https://grocy.info) (ERP beyond you
 * Backup grocy database to [DropBox](https://www.dropbox.com/) daily (because sh*t happens). I chose Dropbox since it is free, versions files and has easy to use tools.
 
 
-## Why?
+## Project Goals
 
-- Cloud based makes it accessible without worrying about home router firewalls and babysitting a server.
-- Sleep easy knowing backups are also happening.
-- Upgrades are relatively painless.
-- If something goes bad, just delete the server and recreate it!
-- Learn something new.
+* Install and run grocy on the cloud with minimal effort.
+* Low cost (Preferably free)
+* Automated backups
+* Secure
+* Make grocy upgrades painless
  
 ## Installing / Getting started
 
@@ -154,18 +154,6 @@ Or
 ```shell 
 ../bin/ssh-host.sh
 ```
-
-## Project Goals 
-
-* Install and run grocy on the cloud with minimal effort.
-
-* Low cost (Preferably free)
-
-* Automated backups
-
-* Secure
-
-* Make grocy upgrades painless
     
 ## Contributing
 

@@ -9,7 +9,7 @@ Opinionated script to deploy and run [grocy](https://grocy.info) (ERP beyond you
 * Installs and runs [grocy](https://grocy.info) server version 2.7.1 and the latest version of [barcode buddy](https://github.com/Forceu/barcodebuddy) on a single AWS EC2 t2.micro instance (free tier i.e. free for one year with a new AWS account).
 * Enable HTTPS only access with free [LetsEncrypt](https://letsencrypt.org/) Certificates with auto renewal.
 * Register host with DNS. Supports [DuckDNS](https://duckdns.org), a free DNS provider
-* Backup grocy database to DropBox daily (because sh*t happens). I chose Dropbox since it is free, versions files and has easy to use tools.
+* Backup grocy database to [DropBox](https://www.dropbox.com/) daily (because sh*t happens). I chose Dropbox since it is free, versions files and has easy to use tools.
 
 
 ## Why?

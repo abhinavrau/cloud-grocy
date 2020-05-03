@@ -61,7 +61,8 @@ resource "aws_instance" "grocy-ec2-instance" {
   provisioner "file" {
     destination = "~/.env"
     content = templatefile("${path.cwd}/../docker/.env.tpl", {
-      domain_name =  "${var.duckdns_domain}.duckdns.org"
+      grocy_domain_name =  "${var.grocy_duckdns_domain}.duckdns.org"
+      bbuddy_domain_name =  "${var.grocy_bbuddy_duckdns_domain}.duckdns.org"
     })
   }
 
@@ -69,16 +70,26 @@ resource "aws_instance" "grocy-ec2-instance" {
   provisioner "file" {
     destination = "~/dns/register-duckdns.sh"
     content = templatefile("${path.cwd}/../dns/register-duckdns.sh.tpl", {
-      duckdns_domain =  var.duckdns_domain
+      grocy_domain_name =  var.grocy_duckdns_domain
+      bbuddy_domain_name =  var.grocy_bbuddy_duckdns_domain
       duckdns_token = var.duckdns_token
     })
   }
 
-  // put in the correct domain name in dns script
+  // put in the correct domain name in dns script to wait for grocy server domain
   provisioner "file" {
     destination = "~/dns/wait-for-dns.sh"
     content = templatefile("${path.cwd}/../dns/wait-for-dns.sh.tpl", {
-      duckdns_domain =  var.duckdns_domain
+      duckdns_domain =  var.grocy_duckdns_domain
+      duckdns_token = var.duckdns_token
+    })
+  }
+
+  // put in the correct domain name in dns script to wait for bbuddy server domain
+  provisioner "file" {
+    destination = "~/dns/wait-for-dns2.sh"
+    content = templatefile("${path.cwd}/../dns/wait-for-dns2.sh.tpl", {
+      duckdns_domain =  var.grocy_bbuddy_duckdns_domain
       duckdns_token = var.duckdns_token
     })
   }

@@ -9,7 +9,7 @@ while true; do
 	else
 		echo "ip has changed - updating"
 		current=$latest
-		echo url="https://www.duckdns.org/update?domains=${duckdns_domain}&token=${duckdns_token}&ip=" | curl -k -o ~/dns/duck.log -K -
+		echo url="https://www.duckdns.org/update?domains=${grocy_domain_name},${bbuddy_domain_name}&token=${duckdns_token}&ip=" | curl -k -o ~/dns/duck.log -K -
 	fi
 	sleep 5m
 done

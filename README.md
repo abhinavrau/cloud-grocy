@@ -3,7 +3,7 @@
 # cloud-grocy
 > Get your [grocy](https://grocy.info) server running securely in the cloud for free!
 
-Opinionated script to deploy and run [grocy](https://grocy.info) (ERP beyond your fridge) on AWS, [DuckDNS](https://duckdns.org) (free DNS provider) and [LetsEncrypt](https://letsencrypt.org/)
+Opinionated script to deploy and run [grocy](https://grocy.info) (ERP beyond your fridge) on AWS, [DuckDNS](https://duckdns.org) (free DNS provider) and [LetsEncrypt](https://letsencrypt.org/) (Free TLS certs provider)
 
 ## Features
 
@@ -14,12 +14,14 @@ Opinionated script to deploy and run [grocy](https://grocy.info) (ERP beyond you
 
 ## Installing / Getting started
 
-Prerequisites:
+### Prerequisites:
 * Git cli
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed and authenticated to an AWS account with the right permissions to create EC2 instances. [Video Tutorial](https://www.youtube.com/watch?v=FOK5BPy30HQ)
 * [Terraform CLI](https://learn.hashicorp.com/terraform/getting-started/install.html) installed
-* Registered [DuckDNS](htts://duckdns.org) domain name. [DuckDNS](https://duckdns.org) is a free service that allows creation of a domain name for free in the duckdns.org top level domain. Use it to register a domain. It will generate a token which you will need for installation.
-* Run the following commands from a command prompt. 
+* Registered [DuckDNS](htts://duckdns.org) domain names for grocy and barcode buddy. [DuckDNS](https://duckdns.org) is a free service that allows creation of a domain names for free in the duckdns.org top level domain. Use it to register domains for our servers. It will generate a token which you will need for installation.
+
+### Preparing
+Run the following commands from a command prompt. 
 
 ```shell
 git clone https://github.com/abhinavrau/cloud-grocy.git
@@ -30,8 +32,11 @@ terraform plan -out=plan
 
 At this step, you will be prompted to enter:
 
-* Domain name (without the duckdns.org suffix) that you registered with [DuckDNS](htts://duckdns.org). 
+* Domain name for the grocy site you want (without the duckdns.org suffix) that you registered with [DuckDNS](htts://duckdns.org). 
+* Domain name for the barcode buddy site (without the duckdns.org suffix) that you registered with [DuckDNS](htts://duckdns.org). 
 * DuckDNS token for your domain created in the previous step.  
+
+### Install!
 
 ```shell 
 terraform apply "plan"
@@ -39,40 +44,74 @@ terraform apply "plan"
 
 This will do the following:
 
-1. Create a VPC, subnet, firewall rules and a t2.micro EC2 instance running Ubuntu 18.04 with a public IP address
-1. Install Docker engine and docker-compose
+1. Create a VPC, subnet, firewall rules, and a t2.micro EC2 instance running Ubuntu 18.04 with a public IP address.
+1. Install Docker and docker-compose.
 1. Register the Public IP address of the EC2 instance with DuckDNS.
-1. Run nginx and grocy as docker containers provided by the [grocy-docker](https://github.com/grocy/grocy-docker) project
-1. Generate free SSL certificates using LetsEncrypt with auto renewal. 
+1. Run [grocy](https://grocy.info) and [barcode buddy](https://barcodebuddy-documentation.readthedocs.io/en/latest/index.html) as docker containers.
+1. Generate free TLS certificates using LetsEncrypt with auto renewal using  [docker-compose-letsencrypt-nginx-proxy-companion](https://github.com/evertramos/docker-compose-letsencrypt-nginx-proxy-companion)
 
 On completion, the script will output:
-* The URL of the grocy server
-* The public IP address of the EC2 t2.micro instance running grocy.
-* The SSH key for the EC2 t2.micro instance
+* The URL of grocy 
+* The URL of barcode buddy 
+* The public IP address of the EC2 t2.micro instance running grocy and barcode buddy.
+* The SSH private key for the EC2 t2.micro instance. 
 
-You Grocy server on the cloud is ready! (It may a take a couple of minutes!)
+You Grocy server with barcode buddy on the cloud is ready! (It may a take a couple of minutes to register the LetsEncrypt certificates.)
 
-Navigate to the URL and login and change the admin password!
+Navigate to the URLs and login and change the admin password!
 
+**IMPORTANT:** 
+- Please save the SSH Key private securely in a password manager. You will need it to take backups and restoring.
+- Do not delete the terraform.state files that get created.  
+ 
 ## Backups
 
 In order to do scheduled backups to dropbox, you have to:
 
 * Pre-configure the [dropbox cli](https://github.com/dropbox/dbxcli) (dbxcli) prior to running the `terraform apply` command. 
-* Uncomment the `"sudo ./schedule-backup.sh"` line in the aws/servers.tf file before running `terraform plan`. Or Run the same command after the install finishes by ssh into the server.
+* Uncomment the `"sudo ./schedule-backup.sh"` line in the [aws/servers.tf](aws/servers.tf) file before running `terraform plan`. Or Run the same command after installation finishes by [SSH into the server](#SSH access).
 * Backups will be taken once a day
 * Backups will be stored in directory called grocy_backup on Dropbox
 
 ## Restoring from Backups
 
 There is a script `restore-from-backup.sh` that can restore the latest backup from dropbox.
-To restore after the terraform has successfully completed:
-- Login to the AWS instance by running the command from the aws directory
-```shell 
-../bin/ssh-host.sh
-```
-This will login you in to the AWS EC2 server. From here run:
 
+- Login to the AWS instance [using SSH](#SSH access). From here run:
+```shell 
+./restore-from-backup.sh
+```
+
+## Upgrading 
+
+To upgrade to a new cloud-grocy release:
+
+### Take a backup of the current database
+
+- [SSH to the server]((#SSH access))
+- Take the backup to dropbox by running:
+
+```shell 
+./grocy-backup.sh
+```
+
+### Update your local copy of cloud-grocy
+- From the base cloud-grocy directory run:
+
+```shell 
+git pull
+```
+### Upgrade by running terraform
+
+```shell 
+terraform plan -out=plan
+terraform apply "plan"
+```
+
+**IMPORTANT:** This will destroy the old EC2 instance and create a new one with the updated servers, so it is important to take backup.
+
+### Restore the backup
+See  [Restoring from Backups](#Restoring from Backups) section mentioned previously. 
 
 ## Deleting
 
@@ -87,13 +126,11 @@ This will destroy all the resources created on AWS. Please remember to backup!
 
 I have personally tested this on my macOS. Testers on Windows and Linux needed!
 
-
-
 ## Configuration
 
 To change the default behaviour, modify the variables.tf file.
 
-## SSH access the AWS EC2 instance
+## SSH access
 
 Make sure you are in the `aws` directory and run:
 
@@ -123,7 +160,7 @@ TODO
 
 * Secure
 
-* Make grocy Upgrades painless
+* Make grocy upgrades painless
     
 ## Contributing
 
@@ -136,6 +173,7 @@ branch. Pull requests are warmly welcome.
 - Projects that helped and inspire this project:
   - docker-compose-letsencrypt-nginx-proxy-companion: https://github.com/evertramos/docker-compose-letsencrypt-nginx-proxy-companion
   - grocy-docker: https://github.com/grocy/grocy-docker
+  - barcode buddy: https://barcodebuddy-documentation.readthedocs.io/en/latest/index.html
   - install-docker.sh gist: https://gist.github.com/EvgenyOrekhov/1ed8a4466efd0a59d73a11d753c0167b
   
 - Repository: https://github.com/abhinavrau/cloud-grocy/

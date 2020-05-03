@@ -7,5 +7,9 @@ output "grocy_host" {
 }
 
 output "grocy_url" {
-  value = "https://${var.duckdns_domain}.duckdns.org"
+  value = "https://${var.grocy_duckdns_domain}.duckdns.org"
+}
+
+output "bbuddy_url" {
+  value = "https://${var.grocy_bbuddy_duckdns_domain}.duckdns.org"
 }

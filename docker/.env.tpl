@@ -7,7 +7,8 @@
 NETWORK=webproxy
 
 # Your domain (or domains)
-DOMAINS=${domain_name}
+GROCY_DOMAIN=${grocy_domain_name}
+BBUDDY_DOMAIN=${bbuddy_domain_name}
 
 # Your email for Let's Encrypt register
 LETSENCRYPT_EMAIL=aaa@aaa.com

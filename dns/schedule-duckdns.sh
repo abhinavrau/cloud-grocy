@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Registering IP address with DuckDNS and wait for DNS to propagate for 5 minutes"
-timeout 5m ./wait-for-dns.sh &&  echo "Public IP registered in DNS successfully." || exit 1;
+timeout 5m ./wait-for-dns.sh && timeout 2m ./wait-for-dns2.sh &&  echo "Public IP registered in DNS successfully." || exit 1;
 
 # Register the daemon to check for IP address change.
 chmod +x duckdns_daemon.sh

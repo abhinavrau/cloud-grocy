@@ -6,7 +6,7 @@
 Opinionated script to deploy and run [grocy](https://grocy.info) (ERP beyond your fridge) on AWS secured with TLS  with automated backups.
 
 ## Features
-* Installs and runs [grocy](https://grocy.info) server and [barcode buddy](https://github.com/Forceu/barcodebuddy) on a single AWS EC2 t2.micro instance (free tier i.e. free for one year with a new AWS account).
+* Installs and runs [grocy](https://grocy.info) server version 2.7.1 and the latest version of [barcode buddy](https://github.com/Forceu/barcodebuddy) on a single AWS EC2 t2.micro instance (free tier i.e. free for one year with a new AWS account).
 * Enable HTTPS only access with free [LetsEncrypt](https://letsencrypt.org/) Certificates with auto renewal.
 * Register host with DNS. Supports [DuckDNS](https://duckdns.org), a free DNS provider
 * Backup grocy database to DropBox daily (because sh*t happens). I chose Dropbox since it is free, versions files and has easy to use tools.
@@ -55,7 +55,7 @@ This will do the following:
 
 1. Create a VPC, subnet, firewall rules, and a t2.micro EC2 instance running Ubuntu 18.04 with a public IP address.
 1. Install Docker and docker-compose.
-1. Register the Public IP address of the EC2 instance with DuckDNS for both the domain names specified earlier.
+1. Register the Public IP address of the EC2 instance with DuckDNS for both the domain names specified earlier and wait for DNS entries to propagate.
 1. Run [grocy](https://grocy.info) and [barcode buddy](https://barcodebuddy-documentation.readthedocs.io/en/latest/index.html) as docker containers.
 1. Generate free TLS certificates using LetsEncrypt with auto renewal using  [docker-compose-letsencrypt-nginx-proxy-companion](https://github.com/evertramos/docker-compose-letsencrypt-nginx-proxy-companion)
 
@@ -65,7 +65,7 @@ On completion, the script will output:
 * The public IP address of the EC2 t2.micro instance running grocy and barcode buddy.
 * The SSH private key for the EC2 t2.micro instance. 
 
-Your Grocy server with barcode buddy on the cloud is ready! (It may a take a couple of minutes to register the LetsEncrypt certificates.)
+Your [grocy](https://grocy.info) server with [barcode buddy](https://github.com/Forceu/barcodebuddy) on the cloud is ready! (It may a take a couple of minutes to register the LetsEncrypt certificates.)
 
 **IMPORTANT:** 
 - Navigate to the URLs and login and change the admin password!
@@ -179,6 +179,7 @@ branch. Pull requests are warmly welcome.
   - docker-compose-letsencrypt-nginx-proxy-companion: https://github.com/evertramos/docker-compose-letsencrypt-nginx-proxy-companion
   - grocy-docker: https://github.com/grocy/grocy-docker
   - barcode buddy: https://barcodebuddy-documentation.readthedocs.io/en/latest/index.html
+  - barcodebuddy-docker: https://github.com/Forceu/barcodebuddy-docker
   - install-docker.sh gist: https://gist.github.com/EvgenyOrekhov/1ed8a4466efd0a59d73a11d753c0167b
   
 - Repository: https://github.com/abhinavrau/cloud-grocy/

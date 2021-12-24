@@ -1,11 +1,9 @@
-provider "tls" {
-  version = "~> 2.1"
-}
+provider "tls" {}
+
 resource "tls_private_key" "ssh_key" {
   algorithm = "RSA"
   rsa_bits = 4096
 }
-
 
 resource "aws_key_pair" "generated_key" {
   key_name = var.ami_key_pair_name
@@ -59,7 +57,7 @@ resource "aws_instance" "grocy-ec2-instance" {
 
   // put in the correct domain name in .env
   provisioner "file" {
-    destination = "~/.env"
+    destination = "/home/ubuntu/.env"
     content = templatefile("${path.cwd}/../docker/.env.tpl", {
       grocy_domain_name =  "${var.grocy_duckdns_domain}.duckdns.org"
       bbuddy_domain_name =  "${var.grocy_bbuddy_duckdns_domain}.duckdns.org"
@@ -68,7 +66,7 @@ resource "aws_instance" "grocy-ec2-instance" {
 
   // put in the correct domain name in dns script
   provisioner "file" {
-    destination = "~/dns/register-duckdns.sh"
+    destination = "/home/ubuntu/dns/register-duckdns.sh"
     content = templatefile("${path.cwd}/../dns/register-duckdns.sh.tpl", {
       grocy_domain_name =  var.grocy_duckdns_domain
       bbuddy_domain_name =  var.grocy_bbuddy_duckdns_domain
@@ -78,7 +76,7 @@ resource "aws_instance" "grocy-ec2-instance" {
 
   // put in the correct domain name in dns script to wait for grocy server domain
   provisioner "file" {
-    destination = "~/dns/wait-for-dns.sh"
+    destination = "/home/ubuntu/dns/wait-for-dns.sh"
     content = templatefile("${path.cwd}/../dns/wait-for-dns.sh.tpl", {
       duckdns_domain =  var.grocy_duckdns_domain
       duckdns_token = var.duckdns_token
@@ -87,7 +85,7 @@ resource "aws_instance" "grocy-ec2-instance" {
 
   // put in the correct domain name in dns script to wait for bbuddy server domain
   provisioner "file" {
-    destination = "~/dns/wait-for-dns2.sh"
+    destination = "/home/ubuntu/dns/wait-for-dns2.sh"
     content = templatefile("${path.cwd}/../dns/wait-for-dns2.sh.tpl", {
       duckdns_domain =  var.grocy_bbuddy_duckdns_domain
       duckdns_token = var.duckdns_token
@@ -97,25 +95,25 @@ resource "aws_instance" "grocy-ec2-instance" {
   // Copy over dns scripts
   provisioner "file" {
     source = "${path.cwd}/../dns/"
-    destination = "~/dns"
+    destination = "/home/ubuntu/dns"
   }
 
   // Copy over docker scripts
   provisioner "file" {
     source = "${path.cwd}/../docker/"
-    destination = "~/"
+    destination = "/home/ubuntu/"
   }
 
   // Copy over letsencrypt-nginx-proxy-companion files
   provisioner "file" {
     source = "${path.cwd}/../docker-compose-letsencrypt-nginx-proxy-companion/"
-    destination = "~/docker-compose-letsencrypt-nginx-proxy-companion"
+    destination = "/home/ubuntu/docker-compose-letsencrypt-nginx-proxy-companion"
   }
 
   // Copy over backup scripts
   provisioner "file" {
     source = "${path.cwd}/../backup/"
-    destination = "~/"
+    destination = "/home/ubuntu/"
   }
 
   // Copy over Dropbox configs
@@ -126,7 +124,7 @@ resource "aws_instance" "grocy-ec2-instance" {
 
   provisioner "file" {
     source = "~/.config/dbxcli"
-    destination = "~/.config"
+    destination = "/home/ubuntu/.config"
   }
 
 

@@ -8,4 +8,4 @@ terraform output host_ssh_key > $tmp_ssh_file
 
 chmod 400 $tmp_ssh_file
 
-ssh -i $tmp_ssh_file ubuntu@$(terraform output grocy_host)
+ssh -i $tmp_ssh_file ubuntu@$(terraform output --raw grocy_host)

@@ -4,3 +4,5 @@
 **/ssh_key.pem
 **/*.tfstate
 **/*.tfstate.*
+**/.terraform.lock.hcl
+**/plan

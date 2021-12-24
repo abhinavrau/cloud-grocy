@@ -5,10 +5,10 @@ version: '2.4'
 services:
 
   nginx:
-    image: "grocy/nginx:v2.7.1-2"
+    image: "grocy/nginx:v3.0.1-12"
     build:
       args:
-        GROCY_VERSION: v2.7.1
+        GROCY_VERSION: v3.0.1
       context: .
       dockerfile: Dockerfile-grocy-nginx
     depends_on:
@@ -25,15 +25,15 @@ services:
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
       VIRTUAL_PORT: 8080
   grocy:
-    image: "grocy/grocy:v2.7.1-2"
+    image: "grocy/grocy:v3.0.1-12"
     build:
       args:
-        GROCY_VERSION: v2.7.1
+        GROCY_VERSION: v3.0.1
       context: .
       dockerfile: Dockerfile-grocy
     expose:
       - '9000'
-    read_only: true
+    read_only: false
     tmpfs:
       - /tmp
     volumes:
